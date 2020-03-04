@@ -1,0 +1,824 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript">
+                function tb8_makeArray(n){
+                this.length = n;
+                return this.length;
+                }
+                tb8_messages = new
+                tb8_makeArray(3);
+                tb8_messages[0] = "JavaScript";
+                tb8_messages[1] = "Scrum -";
+                tb8_messages[2] = "- Board";
+                tb8_rptType = 'infinite';
+                tb8_rptNbr = 10; tb8_speed = 125;
+                tb8_delay = 1000;
+                var tb8_counter=1;
+                var tb8_currMsg=0;
+                var tb8_tekst ="";
+                var tb8_i=0;
+                var tb8_TID = null;
+                function tb8_pisi()
+                {
+                tb8_tekst = tb8_tekst + tb8_messages[tb8_currMsg].substring(tb8_i, tb8_i+1);
+                document.title = tb8_tekst; tb8_sp=tb8_speed;
+                tb8_i++;
+                if (tb8_i==tb8_messages[tb8_currMsg].length){ tb8_currMsg++;
+                tb8_i=0; tb8_tekst="";tb8_sp=tb8_delay;
+                }
+                if (tb8_currMsg == tb8_messages.length)
+                {
+                if ((tb8_rptType == 'finite') && (tb8_counter==tb8_rptNbr)){ clearTimeout(tb8_TID);
+                return;
+                }
+                tb8_counter++;
+                tb8_currMsg = 0;
+                }
+                tb8_TID = setTimeout("tb8_pisi()", tb8_sp);
+                }
+                tb8_pisi()
+    </script>
+    <link href="css/jquery-ui.css" rel="stylesheet" type="text/css"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link type="text/css" href="css/core.css" rel="stylesheet"/>
+    <link type="text/css" href="css/default.css" rel="stylesheet"/>
+    
+    <script src="javascript/jquery-1.8.3.js" type="text/javascript"></script>
+    <script src="javascript/jquery-ui.js" type="text/javascript"></script>
+    <script src="javascript/scrumboard.js" type="text/javascript"></script>
+    <script src="javascript/jTooltip.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var disable = false;
+            $("#btnCreate").click(function () {
+                SBD.showCreateStory();
+            });
+            $("body").click(function () {
+                if (disable == false) {
+                    $(".card-info.selected").removeClass("selected");
+                } else {
+                    disable = false;
+                }
+            });
+            $(".card-info").click(function () {
+                $(".card-info.selected").removeClass("selected");
+                $(this).addClass("selected");
+                disable = true;
+            });
+            $("div.showmenu").live("click", function () {
+                if ($(this).find("div.divAction").is(":hidden")) {
+                    $("div.divAction").hide();
+                    $(this).find("div.divAction").show();
+                }
+                else {
+                    $("div.divAction").hide();
+                }
+            });
+            $("body").click(function () {
+                $("div.divAction").hide();
+            });
+            $("#dialog").find("input").blur(function () {
+                SBD.checkValid("#" + $(this).attr("id"));
+            });
+            $('#scrum .sortable-list').sortable({
+                connectWith: '#scrum .sortable-list',
+                placeholder: 'placeholder',
+                receive: function (event, ui) {
+                    var divAction = $(this).attr("id");
+                    var id = ui.item.find("div.title").attr("id");
+                    var spanStatus = ui.item.find("span.sStatus");
+                    var language = languageLibrary[hidLanguage];
+                    switch (divAction) {
+                        case "divDo":
+                            spanStatus.html(language.mainStatusToDo);
+                            break;
+                        case "divProgress":
+                            spanStatus.html(language.mainStatusInProgress);
+                            break;
+                        case "divDone":
+                            spanStatus.html(language.mainStatusDone);
+                            break;
+                        case "divStory":
+                            spanStatus.html(language.mainStatusStory);
+                            break;
+                    }
+                    SBD.resizeColumn();
+                }
+            });
+
+            SBD.resizeColumn();
+            SBD.loadLibraryLanguage();
+            SBD.loadDefaultLanguage("main");
+            $("img.language").click(function () {
+                SBD.selectLanguage("main", $(this));
+            });
+        });
+
+    </script>
+</head>
+<body id="wrapper">
+    <div id="main-content">
+        <div class="header">
+            <img src="logo.png" width="200" height="100">
+        </div>
+        <div class="container">
+            <a id="btnCreate" class="btn-new"></a>
+            <a id="" class="btn-story"></a>
+            <div class="column-header">
+                <div class="column to-do">
+                    <img id="imgTodo" src="images/todo.png" />
+                </div>
+                <div class="column in-progress">
+                    <img id="imgInProgress" src="images/inprogress.png" />
+                </div>
+                <div class="column done">
+                    <img id="imgDone" src="images/done.png" />
+                </div>
+
+                <div class="column story">
+                    <img id="imgStory" src="images/story.png" />
+                </div>
+                <div class="clear">
+                </div>
+            </div>
+            <div id="scrum" class="scrum">
+                <div class="column to-do">
+                    <ul class="sortable-list" id="divDo">
+                        <li class="sortable-item">
+                            <div class="card-info">
+                                <div class="widget-head">
+                                    <div class="card-status medium">
+                                    </div>
+                                    <div class="title" id="1">
+                                        <span class="sID" onclick="SBD.showInfo(1)">Scrum - 1</span>
+                                    </div>
+                                    <div class="showmenu" id="card-1">
+                                        <div class="divAction" style="display: none;">
+                                            <a class="lnkEdit" href="javascript:SBD.showEditStory(1)">Edit</a> <a class="lnkDelete"
+                                                href="javascript:SBD.confirmDelete(1)">Delete</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="widget-content">
+                                    <table class="form info">
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="2" class="title">
+                                                    "Blek" Ping
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblComponent">Component:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sComponent">Story 1</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblOriginalEstimate">Original Estimate:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sEstimate">4</span> <span class="lblHour">(Day)</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblTimeSpent">Time Sprint:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sSpent">4</span> <span class="lblHour">(Day)</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblAssignee">Assignee:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sAsignee">Aye</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblStatus">Status:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sStatus">To Do</span> <span class="hDescription hidden">Lorem ipsum dolor sit amet,</span> <span class="hPriority hidden">Medium</span>
+                                                    <span class="hStatus hidden">To Do</span> <span class="hTitle hidden">Lorem ipsum</span>
+                                                    <span class="hID hidden">1</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="clrfix">
+                            </div>
+                        </li>
+                        <li class="sortable-item">
+                            <div class="card-info">
+                                <div class="widget-head">
+                                    <div class="card-status high">
+                                    </div>
+                                    <div class="title" id="2">
+                                        <span class="sID" onclick="SBD.showInfo(2)">Scrum - 2</span></div>
+                                    <div class="showmenu" id="card-2">
+                                        <div class="divAction" style="display: none;">
+                                            <a class="lnkEdit" href="javascript:SBD.showEditStory(2)">Edit</a> <a class="lnkDelete"
+                                                href="javascript:SBD.confirmDelete(2)">Delete</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="widget-content">
+                                    <table class="form info">
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="2" class="title">
+                                                    Aye Aye
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblComponent">Component:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sComponent">Story 1</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblOriginalEstimate">Original Estimate:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sEstimate">32</span> <span class="lblHour">(Day)</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblTimeSpent">Time Sprint:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sSpent">32</span> <span class="lblHour">(Day)</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblAssignee">Assignee:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sAsignee">Blek Ping</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblStatus">Status:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sStatus">To Do</span> <span class="hDescription hidden">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</span><span class="hPriority hidden">
+                                                            High</span> <span class="hStatus hidden">To Do</span> <span class="hTitle hidden">Lorem ipsum</span> <span class="hID hidden">2</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="clrfix">
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="column in-progress">
+                    <ul class="sortable-list" id="divProgress">
+                        <li class="sortable-item">
+                            <div class="card-info">
+                                <div class="widget-head">
+                                    <div class="card-status high">
+                                    </div>
+                                    <div class="title" id="5">
+                                        <span class="sID" onclick="SBD.showInfo(3)">Scrum - 3</span>
+                                    </div>
+                                    <div class="showmenu" id="card-5">
+                                        <div class="divAction" style="display: none;">
+                                            <a class="lnkEdit" href="javascript:SBD.showEditStory(5)">Edit</a> <a class="lnkDelete"
+                                                href="javascript:SBD.confirmDelete(5)">Delete</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="widget-content">
+                                    <table class="form info">
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="2" class="title">
+                                                    Blek Ping
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblComponent">Component:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sComponent">Story 1</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblOriginalEstimate">Original Estimate:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sEstimate">4</span> <span class="lblHour">(Day)</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblTimeSpent">Time Sprint:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sSpent">4</span> <span class="lblHour">(Day)</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblAssignee">Assignee:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sAsignee">Aye Aye</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblStatus">Status:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sStatus">In progress</span> <span class="hDescription hidden">Lorem ipsum dolor sit amet, consectetur adipiscing elit,</span> <span class="hPriority hidden">High</span> <span class="hStatus hidden">In progress</span> <span class="hTitle hidden">Lorem ipsum</span> <span class="hID hidden">5</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="clrfix">
+                            </div>
+                        </li>
+                        <li class="sortable-item">
+                            <div class="card-info">
+                                <div class="widget-head">
+                                    <div class="card-status high">
+                                    </div>
+                                    <div class="title" id="6">
+                                        <span class="sID" onclick="SBD.showInfo(4)">Scrum - 4</span>
+                                    </div>
+                                    <div class="showmenu" id="card-6">
+                                        <div class="divAction" style="display: none;">
+                                            <a class="lnkEdit" href="javascript:SBD.showEditStory(6)">Edit</a> <a class="lnkDelete"
+                                                href="javascript:SBD.confirmDelete(6)">Delete</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="widget-content">
+                                    <table class="form info">
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="2" class="title">
+                                                    Lorem ipsum
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblComponent">Component:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sComponent">Story 1</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblOriginalEstimate">Original Estimate:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sEstimate">8</span> <span class="lblHour">(Day)</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblTimeSpent">Time Sprint:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sSpent">8</span> <span class="lblHour">(Day)</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblAssignee">Assignee:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sAsignee">Lorem ipsum</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblStatus">Status:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sStatus">In progress</span> <span class="hDescription hidden">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</span>
+                                                    <span class="hPriority hidden">High</span> <span class="hStatus hidden">In progress</span>
+                                                    <span class="hTitle hidden">Lorem ipsum</span> <span class="hID hidden">6</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="clrfix">
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="column done">
+                    <ul class="sortable-list" id="divDone">
+                        <li class="sortable-item">
+                            <div class="card-info">
+                                <div class="widget-head">
+                                    <div class="card-status high">
+                                    </div>
+                                    <div class="title" id="7">
+                                        <span class="sID" onclick="SBD.showInfo(7)">Scrum - 7</span>
+                                    </div>
+                                    <div class="showmenu" id="card-7">
+                                        <div class="divAction" style="display: none;">
+                                            <a class="lnkEdit" href="javascript:SBD.showEditStory(7)">Edit</a> <a class="lnkDelete"
+                                                href="javascript:SBD.confirmDelete(7)">Delete</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="widget-content">
+                                    <table class="form info">
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="2" class="title">
+                                                    Lorem ipsum
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblComponent">Component:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sComponent">Story 1</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblOriginalEstimate">Original Estimate:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sEstimate">4</span> <span class="lblHour">(Day)</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblTimeSpent">Time Sprint:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sSpent">4</span> <span class="lblHour">(Day)</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblAssignee">Assignee:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sAsignee">Lorem ipsum</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblStatus">Status:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sStatus">Done</span> <span class="hDescription hidden">Lorem ipsum dolor sit amet, consectetur adipiscing elit</span> <span class="hPriority hidden">High</span>
+                                                    <span class="hStatus hidden">Done</span> <span class="hTitle hidden">Lorem ipsum</span>
+                                                    <span class="hID hidden">7</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="clrfix">
+                            </div>
+                        </li>
+                        <li class="sortable-item">
+                            <div class="card-info">
+                                <div class="widget-head">
+                                    <div class="card-status high">
+                                    </div>
+                                    <div class="title" id="8">
+                                        <span class="sID" onclick="SBD.showInfo(8)">Scrum - 8</span>
+                                    </div>
+                                    <div class="showmenu" id="card-8">
+                                        <div class="divAction" style="display: none;">
+                                            <a class="lnkEdit" href="javascript:SBD.showEditStory(8)">Edit</a> <a class="lnkDelete"
+                                                href="javascript:SBD.confirmDelete(8)">Delete</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="widget-content">
+                                    <table class="form info">
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="2" class="title">
+                                                    Lorem ipsum
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblComponent">Component:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sComponent">Story 1</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblOriginalEstimate">Original Estimate:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sEstimate">4</span> <span class="lblHour">(Day)</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblTimeSpent">Time Sprint:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sSpent">4</span> <span class="lblHour">(Day)</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblAssignee">Assignee:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sAsignee">Lorem ipsum</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">
+                                                    <span class="lblStatus">Status:</span>
+                                                </td>
+                                                <td>
+                                                    <span class="sStatus">Done</span> <span class="hDescription hidden">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</span> <span class="hPriority hidden">High</span>
+                                                    <span class="hStatus hidden">Done</span> <span class="hTitle hidden">Lorem ipsum</span> <span class="hID hidden">8</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="clrfix">
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="clearer">
+                </div>
+
+                        <div class="column story">
+                            <p>
+                                <textarea style="border: 1px solid #888; width: 335px; height: 120px; color: white; font-family: sans-serif; font-weight: bold; text-transform: uppercase;overflow-y: hidden; background: url(story1.png) center center no-repeat;"></textarea>
+                            </p>
+                            <p>
+                                <p>
+                                <textarea style="border: 1px solid #888; width: 335px; height: 120px; color: white; font-family: sans-serif; font-weight: bold; text-transform: uppercase;overflow-y: hidden; background: url(story2.png) center center no-repeat;"></textarea>
+                            </p>
+                        </p>
+                        <p>
+                                <p>
+                                <textarea style="border: 1px solid #888; width: 335px; height: 120px; color: white; font-family: sans-serif; font-weight: bold; text-transform: uppercase;overflow-y: hidden; background: url(story3.png) center center no-repeat;"></textarea>
+                            </p>
+                        </p>
+                        </div>
+            </div>
+            <div id="infoDialog" class="dialog">
+                <table class="form">
+                    <tr>
+                        <td class="label">
+                            <span class="lblTitle">Title</span>
+                        </td>
+                        <td class="input" id="infotitle">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <span class="lblDescription">Description</span>
+                        </td>
+                        <td class="input" id="infodescription">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <span class="lblPriority">Priority</span>
+                        </td>
+                        <td class="input" id="infopriority">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <span class="lblComponent">Component</span>
+                        </td>
+                        <td class="input" id="infocomponent">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <span class="lblEstimate">Estimate</span>
+                        </td>
+                        <td class="input" id="infoestimate">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <span class="lblSpent">Spent</span>
+                        </td>
+                        <td class="input" id="infospent">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <span class="lblAssignee">Assignee</span>
+                        </td>
+                        <td class="input" id="infoasignee">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <span class="lblStatus">Status</span>
+                        </td>
+                        <td class="input" id="infostatus">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="dialog" id="dialog">
+                <div id="message">
+                </div>
+                <table class="form popup">
+                    <tr>
+                        <td class="label">
+                            <span class="lblTitle">Story</span><span style="color:Red">*</span>
+                        </td>
+                        <td class="input">
+                            <input type="text" id="txtTitle" />
+                            <input type="hidden" id='txtID' />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <span class="lblDescription">Description</span>
+                        </td>
+                        <td class="input">
+                            <textarea id="txtDescription" rows="4"></textarea>                          
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <span class="lblPriority">Priority</span>
+                        </td>
+                        <td class="input">
+                            <select id="txtPriority">
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <span class="lblComponent">Component</span>
+                        </td>
+                        <td class="input">
+                            <select id="txtComponent">
+                                <option value="Story 1">Story 1</option>
+                                <option value="Story 2">Story 2</option>
+                                <option value="Story 3">Story 3</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <span class="lblEstimate">Estimate</span>
+                        </td>
+                        <td class="input">
+                            <input type="text" id="txtEstimate" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <span class="lblSpent">From</span>
+                        </td>
+                        <td class="input">
+                            <input type="text" id="from" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <span class="lblAssignee">To</span>
+                        </td>
+                        <td class="input">
+                            <input type="text" id="to" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="dialog" id="dialog-confirm" title="Delete story">
+                <div class="dialog-delete">
+                    Are you sure you want to delete this story?
+                </div>
+            </div>
+            <ul id="cOriginal" style="display: none">
+                <li class="sortable-item">
+                    <div class="card-info">
+                        <div class="widget-head">
+                            <div class="card-status">
+                            </div>
+                            <div class="title">
+                                <span class="sID"></span>
+                            </div>
+                            <div class="showmenu">
+                                <div class="divAction">
+                                    <a class="lnkEdit">Edit</a> <a class="lnkDelete">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="widget-content">
+                            <table class="form info">
+                                <tbody>
+                                    <tr>
+                                        <td colspan="2" class="title">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label">
+                                            <span class="lblComponent">Part of:</span>
+                                        </td>
+                                        <td>
+                                            <span class="sComponent"></span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label">
+                                            <span class="lblOriginalEstimate">Time Sprint:</span>
+                                        </td>
+                                        <td>
+                                            <span class="sEstimate"></span><span class="lblHour">(Day)</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label">
+                                            <span class="lblSpent">From:</span>
+                                        </td>
+                                        <td>
+                                            <span class="sSpent"></span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label">
+                                            <span class="lblAssignee">To:</span>
+                                        </td>
+                                        <td>
+                                            <span class="sAsignee"></span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label">
+                                            <span class="lblStatus">Status:</span>
+                                        </td>
+                                        <td>
+                                            <span class="sStatus"></span><span class="hDescription hidden"></span><span class="hPriority hidden">
+                                            </span><span class="hStatus hidden"></span><span class="hTitle hidden"></span><span
+                                                class="hID hidden"></span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="clrfix">
+                    </div>
+                </li>
+            </ul>
+            <div class="clrfix">
+            </div>
+        </div>
+    </div>
+    <div id="footer">
+        <div class="container">
+        </div>
+    </div>
+<script src='http://twemoji.maxcdn.com/twemoji.min.js'></script>
+<script src='https://rawgit.com/LevchenkoD/twemoji-input/master/emoji.js'></script>
+    <script  src="javascript/index.js"></script>
+</body>
+</html>
