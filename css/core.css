@@ -1,0 +1,42 @@
+/* RESET TAG
+------------------------------------------------------------------ */
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, input, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, hr { margin: 0; padding: 0; outline: 0; border: 0; }
+ol, ul { list-style: none; outline:none }
+blockquote, q { quotes: none; }
+blockquote:before, blockquote:after, q:before, q:after { content: ''; }
+h1, h2, h3, h4, h5, h6{ font-weight: normal; }
+table { border-collapse:separate; border-spacing:0; display:table; margin-bottom:0; margin-top:0; text-indent:0; -moz-box-sizing:border-box; }
+/* remember to define focus styles! */
+:focus { outline: 0; }
+
+/* BASIC TAG
+------------------------------------------------------------------ */
+* html { font-size: 101%; }
+body { font-size:12px; font-family: Arial, Verdana, Geneva, Helvetica, sans-serif; color: #121316; line-height: 1; }
+/*div, span, td, th, p, a { font-size: 100% }*/
+a, a:link, a:visited { text-decoration: none; color:#007dc5; }
+a:hover { text-decoration: underline; }
+p { line-height:140%; margin:10px 0; }
+hr { border-top:1px solid #ccc; height: 1px; }		
+h1, a.h1 { font-size: 1.5em; }
+h2, a.h2 { font-size: 1.3em; }
+h3, a.h3 { font-size: 1.1em; }
+h4, a.h4 { font-size: 1em; }
+h5, a.h5 { font-size: 0.8em; }
+h6, a.h6 { font-size: 0.7em; }
+img.language{cursor: pointer}
+/* FORM TAG
+------------------------------------------------------------------ */
+input[type=text], input[type=password], select, textarea
+{	
+	border:1px solid #ddd; padding:3px 5px;
+}
+input[type=text]:focus, input[type=password]:focus, select:focus, textarea:focus {
+	background:#ffffdd;
+}
+input[type=button], input[type=submit], input[type=reset] {
+	border:1px solid #999; padding:2px 4px; text-align:center;
+}
+input:hover[type=button], input:hover[type=submit], input:hover[type=reset] {
+	cursor:pointer; border:1px solid #999;
+}
